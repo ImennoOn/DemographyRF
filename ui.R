@@ -1,84 +1,102 @@
-# More info:
-#   https://github.com/jcheng5/googleCharts
-# Install:
-#   devtools::install_github("jcheng5/googleCharts")
-library(googleCharts)
+# ui.R
+library(shiny)
+library(rCharts)
 
-# Use global max/min for axes so the view window stays
-# constant as the user moves between years
-xlim <- list(
-  min = min(data$Health.Expenditure) - 500,
-  max = max(data$Health.Expenditure) + 500
-)
-ylim <- list(
-  min = min(data$Life.Expectancy),
-  max = max(data$Life.Expectancy) + 3
-)
+Sys.setlocale(category = "LC_ALL", locale = "ru_RU.UTF-8")
+txt <- "Демография"
 
-shinyUI(fluidPage(
-  # This line loads the Google Charts JS library
-  googleChartsInit(),
-  
-  # Use the Google webfont "Source Sans Pro"
-  tags$link(
-    href=paste0("http://fonts.googleapis.com/css?",
-                "family=Source+Sans+Pro:300,600,300italic"),
-    rel="stylesheet", type="text/css"),
-  tags$style(type="text/css",
-             "body {font-family: 'Source Sans Pro'}"
-  ),
-  
-  h2("Google Charts demo"),
-  
-  googleBubbleChart("chart",
-                    width="100%", height = "475px",
-                    # Set the default options for this chart; they can be
-                    # overridden in server.R on a per-update basis. See
-                    # https://developers.google.com/chart/interactive/docs/gallery/bubblechart
-                    # for option documentation.
-                    options = list(
-                      fontName = "Source Sans Pro",
-                      fontSize = 13,
-                      # Set axis labels and ranges
-                      hAxis = list(
-                        title = "Health expenditure, per capita ($USD)",
-                        viewWindow = xlim
-                      ),
-                      vAxis = list(
-                        title = "Life expectancy (years)",
-                        viewWindow = ylim
-                      ),
-                      # The default padding is a little too spaced out
-                      chartArea = list(
-                        top = 50, left = 75,
-                        height = "75%", width = "75%"
-                      ),
-                      # Allow pan/zoom
-                      explorer = list(),
-                      # Set bubble visual props
-                      bubble = list(
-                        opacity = 0.4, stroke = "none",
-                        # Hide bubble label
-                        textStyle = list(
-                          color = "none"
-                        )
-                      ),
-                      # Set fonts
-                      titleTextStyle = list(
-                        fontSize = 16
-                      ),
-                      tooltip = list(
-                        textStyle = list(
-                          fontSize = 12
-                        )
-                      )
-                    )
-  ),
-  fluidRow(
-    shiny::column(4, offset = 4,
-                  sliderInput("year", "Year",
-                              min = min(data$Year), max = max(data$Year),
-                              value = min(data$Year), animate = TRUE)
-    )
+htmlTagsAppend <- function(el, styleTags) {
+  htmltools::tagAppendAttributes(el,
+                                 style = styleTags
   )
+}
+
+textInputRow<-function (inputId, label, value = "", ...) 
+{
+  div(style="display:inline-block",
+      tags$label(label, `for` = inputId), 
+      tags$input(id = inputId, type = "text", value = value, class="input-mini"))
+}
+
+shinyUI(fluidPage(theme = "bootstrap.css",
+  titlePanel(txt),
+  
+  sidebarLayout(
+    sidebarPanel(
+                  conditionalPanel('input.CurrentView === "Основной график"',
+                                   h4("Demography forecast"),
+                                   p("Kratkoe opisanie modeli"),
+                                   selectInput('scenarioIn','Scenario:', choices = c("Optimistic", "Neutral", "Pessimistic")),
+                                   checkboxInput('migration', 'Migration', value = T),
+                                   br(),
+                                   p("Opisanie modeli polnoe i voobwe tyt razmestit bolwe teksta pro podhod...")
+                                   ),
+                  conditionalPanel('input.CurrentView === "Рождаемость"',
+                                   h4("Rogdaemost"),
+                                   p("Opisanie podhoda k koef rogdaemosti")
+                                   ),
+                  conditionalPanel('input.CurrentView === "Смертность"',
+                                   h4("Smertnost"),
+                                   p("Opisanie podhoda k koef smertnosti")
+                                   )
+                  ),
+    
+    mainPanel(    
+                  tabsetPanel( id = "CurrentView",
+                               tabPanel(title = "Основной график",
+                                        showOutput("graphDecompo","nvd3"),
+                                        br()
+#                                         showOutput("birthControlGraph","nvd3"),
+#                                         showOutput("deathControlGraph","nvd3")
+                                        ),
+                               tabPanel(title = "Рождаемость",
+                                        fluidRow(column(2,
+                                                        br(),
+                                                        br(),
+                                                        br(),
+                                                        numericInput(inputId = "c_b_1", label = NULL, value = 0),
+                                                        br(),
+                                                        numericInput(inputId = "c_b_2", label = NULL, value = 30),
+                                                        br(),
+                                                        numericInput(inputId = "c_b_3", label = NULL, value = 50),
+                                                        br(),
+                                                        numericInput(inputId = "c_b_4", label = NULL, value = 45),
+                                                        br(),
+                                                        numericInput(inputId = "c_b_5", label = NULL, value = 32),
+                                                        br(),
+                                                        numericInput(inputId = "c_b_6", label = NULL, value = 10),
+                                                        br(),
+                                                        numericInput(inputId = "c_b_7", label = NULL, value = 1)
+                                                        ),
+                                                 column(4,
+                                                        showOutput("birthControlGraph","nvd3"))
+                                                 )
+                                        ),
+                               tabPanel(title = "Смертность",
+                                        fluidRow(column(2,
+                                                        br(),
+                                                        br(),
+                                                        br(),
+                                                        numericInput(inputId = "c_d_1", label = NULL, value = 0),
+                                                        br(),
+                                                        numericInput(inputId = "c_d_2", label = NULL, value = 30),
+                                                        br(),
+                                                        numericInput(inputId = "c_d_3", label = NULL, value = 50),
+                                                        br(),
+                                                        numericInput(inputId = "c_d_4", label = NULL, value = 45),
+                                                        br(),
+                                                        numericInput(inputId = "c_d_5", label = NULL, value = 32),
+                                                        br(),
+                                                        numericInput(inputId = "c_d_6", label = NULL, value = 10),
+                                                        br(),
+                                                        numericInput(inputId = "c_d_7", label = NULL, value = 1)
+                                                        ),
+                                                 column(4,
+                                                        showOutput("deathControlGraph","nvd3")
+                                                        )
+                                                 )
+                                        )
+                               )
+              )
+              )
 ))
