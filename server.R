@@ -278,6 +278,19 @@ shinyServer(function(input, output) {
     return(deathControlGraph)
   })
 
-
-  
+  library(googleVis)
+  df <- data.frame(country=c("US", "GB", "BR"), val1=c(10,13,14), val2=c(23,12,32))
+  output$googleVizChart <-  gvisLineChart(df, xvar="country", yvar=c("val1","val2"),
+                                          options=list(title="Hello World",
+                                                       titleTextStyle="{color:'red', fontName:'Courier', fontSize:16}",
+                                                       backgroundColor="#D3D3D3",
+                                                       vAxis="{gridlineColor:'#FFFFFF'}",
+                                                       hAxis="{title:'Country', titleTextStyle:{color:'blue'}}",
+                                                       series="[{color:'green', targetAxisIndex: 0}, {color: 'orange',targetAxisIndex:1}]",
+                                                       vAxes="[{title:'val1'}, {title:'val2'}]",
+                                                       legend="bottom",
+                                                       curveType='function',
+                                                       width=500,
+                                                       height=300
+                                                       ))
 })
