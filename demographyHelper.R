@@ -13,13 +13,13 @@ populationsRF_DF<-data.frame(years,
                              femaleRuralPopulation = rep(1:length(ageGroupHeader), each = length(years))
 )
 
-birthKoefs_DF <- data.frame(years, 
+birthCoefs_DF <- data.frame(years, 
                             birthAgeGroup = rep(1:length(birthAgeGroupHeader), each = length(years)),
                             femaleUrbanBirth = rep(1:length(birthAgeGroupHeader), each = length(years)), 
                             femaleRuralBirth = rep(1:length(birthAgeGroupHeader), each = length(years))
 )
 
-deathKoefs_DF <- data.frame(years, 
+deathCoefs_DF <- data.frame(years, 
                             deathAgeGroup = rep(1:length(deathAgeGroupHeader), each = length(years)), 
                             maleUrbanDeath = rep(1:length(deathAgeGroupHeader), each = length(years)),
                             maleRuralDeath = rep(1:length(deathAgeGroupHeader), each = length(years)),
@@ -73,69 +73,88 @@ readData <- function(populationsRF_DF){
   return(populationsRF_DF)
 }
 
-readKoefs <- function(birthKoefs_DF, deathKoefs_DF){
-  #Koefs structure
+readCoefs <- function(birthCoefs_DF, deathCoefs_DF){
+  #Coefs structure
   #Birth
-  birthKoefs_r_urban <- read.xlsx(paste(getwd(),"/RFData/4.3.xls", sep = ""), sheetIndex = 1, startRow = 42, endRow = 61, header = F)
-  birthKoefs_r_urban <- as.data.frame(t(birthKoefs_r_urban))
-  colnames(birthKoefs_r_urban) <- birthKoefs_r_urban[1, ]
-  birthKoefs_r_urban <- birthKoefs_r_urban[-1, ]
+  birthCoefs_r_urban <- read.xlsx(paste(getwd(),"/RFData/4.3.xls", sep = ""), sheetIndex = 1, startRow = 42, endRow = 61, header = F)
+  birthCoefs_r_urban <- as.data.frame(t(birthCoefs_r_urban))
+  colnames(birthCoefs_r_urban) <- birthCoefs_r_urban[1, ]
+  birthCoefs_r_urban <- birthCoefs_r_urban[-1, ]
   
-  for(year in names(birthKoefs_r_urban)){
-    birthKoefs_DF[birthKoefs_DF$years==year,]$femaleUrbanBirth <- birthKoefs_r_urban[[paste("",year,sep = "")]]
-    birthKoefs_DF[birthKoefs_DF$years==year,]$femaleUrbanBirth[length(birthAgeGroupHeader)] <- 0
+  for(year in names(birthCoefs_r_urban)){
+    birthCoefs_DF[birthCoefs_DF$years==year,]$femaleUrbanBirth <- birthCoefs_r_urban[[paste("",year,sep = "")]]
+    birthCoefs_DF[birthCoefs_DF$years==year,]$femaleUrbanBirth[length(birthAgeGroupHeader)] <- 0
   }
-  # birthKoefs_DF[birthKoefs_DF$years==2013,]$femaleUrbanBirth
+  # birthCoefs_DF[birthCoefs_DF$years==2013,]$femaleUrbanBirth
   
-  birthKoefs_r_rural <- read.xlsx(paste(getwd(),"/RFData/4.3.xls", sep = ""), sheetIndex = 1, startRow = 70, endRow = 89, header = F)
-  birthKoefs_r_rural <- as.data.frame(t(birthKoefs_r_rural))
-  colnames(birthKoefs_r_rural) <- birthKoefs_r_rural[1, ]
-  birthKoefs_r_rural <- birthKoefs_r_rural[-1, ]
+  birthCoefs_r_rural <- read.xlsx(paste(getwd(),"/RFData/4.3.xls", sep = ""), sheetIndex = 1, startRow = 70, endRow = 89, header = F)
+  birthCoefs_r_rural <- as.data.frame(t(birthCoefs_r_rural))
+  colnames(birthCoefs_r_rural) <- birthCoefs_r_rural[1, ]
+  birthCoefs_r_rural <- birthCoefs_r_rural[-1, ]
   
-  for(year in names(birthKoefs_r_rural)){
-    birthKoefs_DF[birthKoefs_DF$years==year,]$femaleRuralBirth <- birthKoefs_r_rural[[paste("",year,sep = "")]]
-    birthKoefs_DF[birthKoefs_DF$years==year,]$femaleRuralBirth[length(birthAgeGroupHeader)] <- 0
+  for(year in names(birthCoefs_r_rural)){
+    birthCoefs_DF[birthCoefs_DF$years==year,]$femaleRuralBirth <- birthCoefs_r_rural[[paste("",year,sep = "")]]
+    birthCoefs_DF[birthCoefs_DF$years==year,]$femaleRuralBirth[length(birthAgeGroupHeader)] <- 0
   }
-  # birthKoefs_DF[birthKoefs_DF$years==2013,]$femaleRuralBirth
+  # birthCoefs_DF[birthCoefs_DF$years==2013,]$femaleRuralBirth
   
   #Death
-  deathKoefs_r_urban <- read.xlsx(paste(getwd(),"/RFData/5.2.xls", sep = ""), sheetIndex = 1, startRow = 33, endRow = 51, header = F)
-  deathKoefs_DF[deathKoefs_DF$years==2011,]$maleUrbanDeath <- deathKoefs_r_urban[["X5"]]
-  deathKoefs_DF[deathKoefs_DF$years==2012,]$maleUrbanDeath <- deathKoefs_r_urban[["X6"]]
-  deathKoefs_DF[deathKoefs_DF$years==2013,]$maleUrbanDeath <- deathKoefs_r_urban[["X7"]]
+  deathCoefs_r_urban <- read.xlsx(paste(getwd(),"/RFData/5.2.xls", sep = ""), sheetIndex = 1, startRow = 33, endRow = 51, header = F)
+  deathCoefs_DF[deathCoefs_DF$years==2011,]$maleUrbanDeath <- deathCoefs_r_urban[["X5"]]
+  deathCoefs_DF[deathCoefs_DF$years==2012,]$maleUrbanDeath <- deathCoefs_r_urban[["X6"]]
+  deathCoefs_DF[deathCoefs_DF$years==2013,]$maleUrbanDeath <- deathCoefs_r_urban[["X7"]]
   
-  deathKoefs_DF[deathKoefs_DF$years==2011,]$femaleUrbanDeath <- deathKoefs_r_urban[["X8"]]
-  deathKoefs_DF[deathKoefs_DF$years==2012,]$femaleUrbanDeath <- deathKoefs_r_urban[["X9"]]
-  deathKoefs_DF[deathKoefs_DF$years==2013,]$femaleUrbanDeath <- deathKoefs_r_urban[["X10"]]
+  deathCoefs_DF[deathCoefs_DF$years==2011,]$femaleUrbanDeath <- deathCoefs_r_urban[["X8"]]
+  deathCoefs_DF[deathCoefs_DF$years==2012,]$femaleUrbanDeath <- deathCoefs_r_urban[["X9"]]
+  deathCoefs_DF[deathCoefs_DF$years==2013,]$femaleUrbanDeath <- deathCoefs_r_urban[["X10"]]
   
-  deathKoefs_r_rural <- read.xlsx(paste(getwd(),"/RFData/5.2.xls", sep = ""), sheetIndex = 1, startRow = 55, endRow = 73, header = F)
-  deathKoefs_DF[deathKoefs_DF$years==2011,]$maleRuralDeath <- deathKoefs_r_rural[["X5"]]
-  deathKoefs_DF[deathKoefs_DF$years==2012,]$maleRuralDeath <- deathKoefs_r_rural[["X6"]]
-  deathKoefs_DF[deathKoefs_DF$years==2013,]$maleRuralDeath <- deathKoefs_r_rural[["X7"]]
+  deathCoefs_r_rural <- read.xlsx(paste(getwd(),"/RFData/5.2.xls", sep = ""), sheetIndex = 1, startRow = 55, endRow = 73, header = F)
+  deathCoefs_DF[deathCoefs_DF$years==2011,]$maleRuralDeath <- deathCoefs_r_rural[["X5"]]
+  deathCoefs_DF[deathCoefs_DF$years==2012,]$maleRuralDeath <- deathCoefs_r_rural[["X6"]]
+  deathCoefs_DF[deathCoefs_DF$years==2013,]$maleRuralDeath <- deathCoefs_r_rural[["X7"]]
   
-  deathKoefs_DF[deathKoefs_DF$years==2011,]$femaleRuralDeath <- deathKoefs_r_rural[["X8"]]
-  deathKoefs_DF[deathKoefs_DF$years==2012,]$femaleRuralDeath <- deathKoefs_r_rural[["X9"]]
-  deathKoefs_DF[deathKoefs_DF$years==2013,]$femaleRuralDeath <- deathKoefs_r_rural[["X10"]]
+  deathCoefs_DF[deathCoefs_DF$years==2011,]$femaleRuralDeath <- deathCoefs_r_rural[["X8"]]
+  deathCoefs_DF[deathCoefs_DF$years==2012,]$femaleRuralDeath <- deathCoefs_r_rural[["X9"]]
+  deathCoefs_DF[deathCoefs_DF$years==2013,]$femaleRuralDeath <- deathCoefs_r_rural[["X10"]]
   
-  return(list(birthKoefs_DF, deathKoefs_DF))
+  return(list(birthCoefs_DF, deathCoefs_DF))
   #remove all unused vars
-  #   rm(list=ls()[! ls() %in% c("deathKoefs_DF","birthKoefs_DF", "populationsRF_DF")])
+  #   rm(list=ls()[! ls() %in% c("deathCoefs_DF","birthCoefs_DF", "populationsRF_DF")])
 }
 
-koefsCorrect <- function(birthKoefs_DF, deathKoefs_DF, yearBegins, yearEnds){
+koefsCorrect <- function(birthCoefs_DF, deathCoefs_DF, yearBegins, yearEnds){
   #Fill koefs
   for(currentFutureYear in seq(yearBegins,yearEnds,1)){
-    birthKoefs_DF[birthKoefs_DF$years==currentFutureYear,]$femaleUrbanBirth <- birthKoefs_DF[birthKoefs_DF$years==currentFutureYear-1,]$femaleUrbanBirth
-    birthKoefs_DF[birthKoefs_DF$years==currentFutureYear,]$femaleRuralBirth <- birthKoefs_DF[birthKoefs_DF$years==currentFutureYear-1,]$femaleRuralBirth
+    birthCoefs_DF[birthCoefs_DF$years==currentFutureYear,]$femaleUrbanBirth <- birthCoefs_DF[birthCoefs_DF$years==currentFutureYear-1,]$femaleUrbanBirth
+    birthCoefs_DF[birthCoefs_DF$years==currentFutureYear,]$femaleRuralBirth <- birthCoefs_DF[birthCoefs_DF$years==currentFutureYear-1,]$femaleRuralBirth
   }
   
   for(currentFutureYear in seq(yearBegins,yearEnds,1)){
-    deathKoefs_DF[deathKoefs_DF$years==currentFutureYear,]$maleUrbanDeath <- deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$maleUrbanDeath
-    deathKoefs_DF[deathKoefs_DF$years==currentFutureYear,]$femaleUrbanDeath <- deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$femaleUrbanDeath
-    deathKoefs_DF[deathKoefs_DF$years==currentFutureYear,]$maleRuralDeath <- deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$maleRuralDeath
-    deathKoefs_DF[deathKoefs_DF$years==currentFutureYear,]$femaleRuralDeath <- deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$femaleRuralDeath
+    deathCoefs_DF[deathCoefs_DF$years==currentFutureYear,]$maleUrbanDeath <- deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$maleUrbanDeath
+    deathCoefs_DF[deathCoefs_DF$years==currentFutureYear,]$femaleUrbanDeath <- deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$femaleUrbanDeath
+    deathCoefs_DF[deathCoefs_DF$years==currentFutureYear,]$maleRuralDeath <- deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$maleRuralDeath
+    deathCoefs_DF[deathCoefs_DF$years==currentFutureYear,]$femaleRuralDeath <- deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$femaleRuralDeath
   }
-  return(list(birthKoefs_DF, deathKoefs_DF))
+  return(list(birthCoefs_DF, deathCoefs_DF))
+}
+
+koefsCorrectByAgeGroupGradiently <- function(birthCoefs_DF, deathCoefs_DF, yearBegins, yearEnds){
+  #Fill koefs
+  #Get mean for every ageGroup
+  #koefs as linear grad between yearBegins and yearEnds
+  beginYearBirthCoef <- data.frame(birthAgeGroup = birthAgeGroupHeader, birthCoef = birthCoefs_DF[years=yearBegins,]))
+  for(currentFutureYear in seq(yearBegins,yearEnds,1)){
+    birthCoefs_DF[birthCoefs_DF$years==currentFutureYear,]$femaleUrbanBirth <- birthCoefs_DF[birthCoefs_DF$years==currentFutureYear-1,]$femaleUrbanBirth
+    birthCoefs_DF[birthCoefs_DF$years==currentFutureYear,]$femaleRuralBirth <- birthCoefs_DF[birthCoefs_DF$years==currentFutureYear-1,]$femaleRuralBirth
+  }
+  
+  for(currentFutureYear in seq(yearBegins,yearEnds,1)){
+    deathCoefs_DF[deathCoefs_DF$years==currentFutureYear,]$maleUrbanDeath <- deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$maleUrbanDeath
+    deathCoefs_DF[deathCoefs_DF$years==currentFutureYear,]$femaleUrbanDeath <- deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$femaleUrbanDeath
+    deathCoefs_DF[deathCoefs_DF$years==currentFutureYear,]$maleRuralDeath <- deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$maleRuralDeath
+    deathCoefs_DF[deathCoefs_DF$years==currentFutureYear,]$femaleRuralDeath <- deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$femaleRuralDeath
+  }
+  return(list(birthCoefs_DF, deathCoefs_DF))
 }
 
 simulateRF <- function(populationsRF_DF, yearBegins, yearEnds){
@@ -148,10 +167,10 @@ simulateRF <- function(populationsRF_DF, yearBegins, yearEnds){
     futurePopulation <- populationsRF_DF[populationsRF_DF$years == currentFutureYear,]
     
     for(birthGroup in seq(1,7,1)){
-      newbieUrban <- newbieUrban + currentPopulation$femaleUrbanPopulation[birthGroup+7]/1000*birthKoefs_DF[birthKoefs_DF$years==currentFutureYear-1,]$femaleUrbanBirth[birthGroup]
+      newbieUrban <- newbieUrban + currentPopulation$femaleUrbanPopulation[birthGroup+7]/1000*birthCoefs_DF[birthCoefs_DF$years==currentFutureYear-1,]$femaleUrbanBirth[birthGroup]
     }
     for(birthGroup in seq(1,7,1)){
-      newbieRural <- newbieRural + currentPopulation$femaleRuralPopulation[birthGroup+7]/1000*birthKoefs_DF[birthKoefs_DF$years==currentFutureYear-1,]$femaleRuralBirth[birthGroup]
+      newbieRural <- newbieRural + currentPopulation$femaleRuralPopulation[birthGroup+7]/1000*birthCoefs_DF[birthCoefs_DF$years==currentFutureYear-1,]$femaleRuralBirth[birthGroup]
     }
     
     populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == 1),]$maleUrbanPopulation <- round(newbieUrban/2,0)
@@ -162,22 +181,22 @@ simulateRF <- function(populationsRF_DF, yearBegins, yearEnds){
     #Death
     for(populGroup in seq(1,22,1)){
       if(populGroup == 1){
-        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$maleUrbanPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$maleUrbanPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$maleUrbanPopulation/1000 * deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$maleUrbanDeath[1],0)
-        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$femaleUrbanPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleUrbanPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleUrbanPopulation/1000 * deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$femaleUrbanDeath[1],0)
-        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$maleRuralPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$maleRuralPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$maleRuralPopulation/1000 * deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$maleRuralDeath[1],0)
-        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$femaleRuralPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleRuralPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleRuralPopulation/1000 * deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$femaleRuralDeath[1],0)
+        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$maleUrbanPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$maleUrbanPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$maleUrbanPopulation/1000 * deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$maleUrbanDeath[1],0)
+        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$femaleUrbanPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleUrbanPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleUrbanPopulation/1000 * deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$femaleUrbanDeath[1],0)
+        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$maleRuralPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$maleRuralPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$maleRuralPopulation/1000 * deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$maleRuralDeath[1],0)
+        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$femaleRuralPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleRuralPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleRuralPopulation/1000 * deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$femaleRuralDeath[1],0)
       }
       if(populGroup < 6 & populGroup > 1){
-        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$maleUrbanPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$maleUrbanPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$maleUrbanPopulation/1000 * deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$maleUrbanDeath[2]/4,0)
-        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$femaleUrbanPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleUrbanPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleUrbanPopulation/1000 * deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$femaleUrbanDeath[2]/4,0)
-        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$maleRuralPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$maleRuralPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$maleRuralPopulation/1000 * deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$maleRuralDeath[2]/4,0)
-        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$femaleRuralPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleRuralPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleRuralPopulation/1000 * deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$femaleRuralDeath[2]/4,0)
+        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$maleUrbanPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$maleUrbanPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$maleUrbanPopulation/1000 * deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$maleUrbanDeath[2]/4,0)
+        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$femaleUrbanPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleUrbanPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleUrbanPopulation/1000 * deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$femaleUrbanDeath[2]/4,0)
+        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$maleRuralPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$maleRuralPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$maleRuralPopulation/1000 * deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$maleRuralDeath[2]/4,0)
+        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$femaleRuralPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleRuralPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleRuralPopulation/1000 * deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$femaleRuralDeath[2]/4,0)
       }
       if(populGroup >= 6){
-        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$maleUrbanPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$maleUrbanPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$maleUrbanPopulation/1000 * deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$maleUrbanDeath[populGroup-3],0)
-        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$femaleUrbanPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleUrbanPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleUrbanPopulation/1000 * deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$femaleUrbanDeath[populGroup-3],0)
-        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$maleRuralPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$maleRuralPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$maleRuralPopulation/1000 * deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$maleRuralDeath[populGroup-3],0)
-        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$femaleRuralPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleRuralPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleRuralPopulation/1000 * deathKoefs_DF[deathKoefs_DF$years==currentFutureYear-1,]$femaleRuralDeath[populGroup-3],0)
+        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$maleUrbanPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$maleUrbanPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$maleUrbanPopulation/1000 * deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$maleUrbanDeath[populGroup-3],0)
+        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$femaleUrbanPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleUrbanPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleUrbanPopulation/1000 * deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$femaleUrbanDeath[populGroup-3],0)
+        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$maleRuralPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$maleRuralPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$maleRuralPopulation/1000 * deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$maleRuralDeath[populGroup-3],0)
+        populationsRF_DF[which(populationsRF_DF$years == currentFutureYear & populationsRF_DF$ageGroup == populGroup),]$femaleRuralPopulation <- currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleRuralPopulation - round(currentPopulation[currentPopulation$ageGroup == populGroup,]$femaleRuralPopulation/1000 * deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$femaleRuralDeath[populGroup-3],0)
       }
     }
     

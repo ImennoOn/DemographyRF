@@ -3,6 +3,7 @@ library(rCharts)
 library(googleVis)
 library(ggplot2)
 library(gdata)
+library(plyr)
 
 
 shinyServer(function(input, output) {
