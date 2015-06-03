@@ -20,7 +20,23 @@ textInputRow<-function (inputId, label, value = "", ...)
 
 
 {
-  shinyUI(fluidPage(includeHTML(paste(getwd(),"/www/index.html",sep=""))
+  shinyUI(fluidPage(includeHTML(paste(getwd(),"/www/head.html",sep="")),
+                    includeHTML(paste(getwd(),"/www/navbar.html",sep="")),
+                    includeHTML(paste(getwd(),"/www/carousel.html",sep="")),
+                    HTML('    <!-- Marketing messaging and featurettes
+    ================================================== -->
+    <!-- Wrap the rest of the page in another container to center all the content. -->
+
+    <div class="container marketing">'),
+                    includeHTML(paste(getwd(),"/www/threeCol.html",sep="")),
+                    HTML('<hr class="featurette-divider">'),
+                    showOutput("graphDecompo","nvd3"),
+                    HTML('<hr class="featurette-divider">'),
+                    htmlOutput("googleVizChart"),
+                    HTML('
+    </div>
+    <!-- /.container -->'),
+                    includeHTML(paste(getwd(),"/www/modalforms.html",sep=""))
                     ))
 }
 

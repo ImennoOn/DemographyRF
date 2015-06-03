@@ -1,5 +1,6 @@
 library(shiny)
 library(rCharts)
+library(googleVis)
 library(ggplot2)
 library(gdata)
 
@@ -241,13 +242,20 @@ shinyServer(function(input, output) {
   populationsRF_DF <- simulateRF(populationsRF_DF, 2003,2009)
   populationsRF_DF <- simulateRF(populationsRF_DF, 2011,2013)
   populationsRF_DF <- simulateRF(populationsRF_DF, 2015,2050)
-  
-  groups <- aggregate(. ~ years, data = populationsRF_DF, FUN=sum)
-  
-  dataDemographyRF <- data.frame(time = rep(1989:2050, each = 1),
-                                 var = rep(c("male Urban","female Urban","male Rural", "female Rural"), each = 1*(2050-1989+1)),
-                                 val = c(groups$maleUrbanPopulation, groups$femaleUrbanPopulation, groups$maleRuralPopulation, groups$femaleRuralPopulation)
+
+  dataDemographyRF_transformed <- ddply(populationsRF_DF, c("years", "ageGroup"), summarise,
+                                        population = sum(maleUrbanPopulation, femaleUrbanPopulation, maleRuralPopulation, femaleRuralPopulation)
   )
+  dataDemographyRF <- data.frame(time = rep(1989:2050, each = 1),
+                                 var = rep(1:22, each = 1*(2050-1989+1)),
+                                 val = dataDemographyRF_transformed$population
+  )
+  
+#   groups <- aggregate(. ~ years, data = populationsRF_DF, FUN=sum)
+#   dataDemographyRF <- data.frame(time = rep(1989:2050, each = 1),
+#                                  var = rep(1:4, each = 1*(2050-1989+1)),
+#                                  val = c(groups$maleUrbanPopulation, groups$femaleUrbanPopulation, groups$maleRuralPopulation, groups$femaleRuralPopulation)
+#   )
   
   output$graphDecompo <- renderChart({
     n <- nPlot(val ~ time, data = dataDemographyRF, type = "stackedAreaChart", group="var")
@@ -259,7 +267,7 @@ shinyServer(function(input, output) {
   output$birthControlGraph <- renderChart({
     birthKoefs_df <- data.frame(group = rep(1:7, each = 1),
                                 var = rep(1, each = 7),
-                                values = c(input$c_b_1,input$c_b_2,input$c_b_3,input$c_b_4,input$c_b_5,input$c_b_6,input$c_b_7)
+                                values = rep(1, each = 7)
     )
     birthControlGraph <- nPlot(values ~ group, data = birthKoefs_df, type = "multiBarHorizontalChart", group="var")
     birthControlGraph$chart(showControls = F, showValues = F, transitionDuration = 0)
@@ -278,9 +286,10 @@ shinyServer(function(input, output) {
     return(deathControlGraph)
   })
 
-  library(googleVis)
+
   df <- data.frame(country=c("US", "GB", "BR"), val1=c(10,13,14), val2=c(23,12,32))
-  output$googleVizChart <-  gvisLineChart(df, xvar="country", yvar=c("val1","val2"),
+  output$googleVizChart <-  renderGvis({
+    gvisLineChart(df, xvar="country", yvar=c("val1","val2"),
                                           options=list(title="Hello World",
                                                        titleTextStyle="{color:'red', fontName:'Courier', fontSize:16}",
                                                        backgroundColor="#D3D3D3",
@@ -293,4 +302,5 @@ shinyServer(function(input, output) {
                                                        width=500,
                                                        height=300
                                                        ))
+    })
 })
