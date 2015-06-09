@@ -1,9 +1,27 @@
 #Demography helper file
-years <- rep(1989:2050, each = 1)
+years <- seq(1989, 2050, 1)
 ageGroupHeader <- seq(1,22,1)
 urbanRuralGroups <- seq(1,2,1)
 birthAgeGroupHeader <- seq(1,8,1)
 deathAgeGroupHeader <- seq(1,19,1)
+
+#For final data
+years_f <- seq(1989, 2050, 1)
+age_f <- seq(1, 100, 1)
+urbanF_f <- factor(c(TRUE, FALSE),labels = c("urban", "rural"))
+maleF_f <- factor(c(TRUE, FALSE), labels = c("male", "female"))
+regionNames <- seq(1,85,1)
+dfLength <- rep(1, length(years_f)*length(age_f)*length(urbanF_f)*length(maleF_f)*length(regionNames))
+
+populationDF <- data.frame(year = years_f, 
+                           age = age_f,
+                           region = regionNames,
+                           urban = c("urban", "rural"),
+                           sex = c("male", "female"),
+                           population = dfLength,
+                           deathCoef = dfLength,
+                           birthCoef = dfLength
+                           )
 
 populationsRF_DF<-data.frame(years,
                              ageGroup = rep(1:length(ageGroupHeader), each = length(years)),
@@ -244,4 +262,16 @@ simulateRF <- function(populationsRF_DF, yearBegins, yearEnds){
     
   }
   return(populationsRF_DF)
+}
+
+
+#New version of DF for demography simulation
+readRegionsLabels() <- function(){
+  #WIP return vector of regions' names from 2ph_reg...xls
+  # --- MOCK ---
+  regionLabels <- as.character(seq(1,100,1))
+  return(regionLabels)
+}
+makeMainDemographyDF <- function(populationDF){
+  
 }
