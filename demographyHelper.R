@@ -160,19 +160,9 @@ koefsCorrectByAgeGroupGradiently <- function(birthCoefs_DF, deathCoefs_DF, yearB
   #Fill koefs
   #Get mean for every ageGroup
   #koefs as linear grad between yearBegins and yearEnds
-  beginYearBirthCoef <- data.frame(birthAgeGroup = birthAgeGroupHeader, birthCoef = birthCoefs_DF[years=yearBegins,]))
-  for(currentFutureYear in seq(yearBegins,yearEnds,1)){
-    birthCoefs_DF[birthCoefs_DF$years==currentFutureYear,]$femaleUrbanBirth <- birthCoefs_DF[birthCoefs_DF$years==currentFutureYear-1,]$femaleUrbanBirth
-    birthCoefs_DF[birthCoefs_DF$years==currentFutureYear,]$femaleRuralBirth <- birthCoefs_DF[birthCoefs_DF$years==currentFutureYear-1,]$femaleRuralBirth
-  }
-  
-  for(currentFutureYear in seq(yearBegins,yearEnds,1)){
-    deathCoefs_DF[deathCoefs_DF$years==currentFutureYear,]$maleUrbanDeath <- deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$maleUrbanDeath
-    deathCoefs_DF[deathCoefs_DF$years==currentFutureYear,]$femaleUrbanDeath <- deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$femaleUrbanDeath
-    deathCoefs_DF[deathCoefs_DF$years==currentFutureYear,]$maleRuralDeath <- deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$maleRuralDeath
-    deathCoefs_DF[deathCoefs_DF$years==currentFutureYear,]$femaleRuralDeath <- deathCoefs_DF[deathCoefs_DF$years==currentFutureYear-1,]$femaleRuralDeath
-  }
-  return(list(birthCoefs_DF, deathCoefs_DF))
+  beginYearBirthCoef <- data.frame(birthAgeGroup = birthAgeGroupHeader, 
+                                   birthCoef = birthCoefs_DF[birthCoefs_DF$years == yearBegins,])
+  #Not finished
 }
 
 simulateRF <- function(populationsRF_DF, yearBegins, yearEnds){

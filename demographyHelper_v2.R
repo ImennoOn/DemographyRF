@@ -1,15 +1,8 @@
-#Demography helper file
-years <- seq(1989, 2050, 1)
-ageGroupHeader <- seq(1,22,1)
-urbanRuralGroups <- seq(1,2,1)
-birthAgeGroupHeader <- seq(1,8,1)
-deathAgeGroupHeader <- seq(1,19,1)
-
 #For final data
 years_f <- seq(1989, 2050, 1)
-age_f <- seq(1, 100, 1)
-urbanF_f <- factor(c(TRUE, FALSE),labels = c("urban", "rural"))
-maleF_f <- factor(c(TRUE, FALSE), labels = c("male", "female"))
+age_f <- seq(5, 100, 5)
+urbanF_f <- factor(c(1, 0),labels = c("urban", "rural"))
+maleF_f <- factor(c(1, 0), labels = c("male", "female"))
 
 
 #Main Functions
@@ -25,18 +18,36 @@ readRegionsLabels <- function(){
   #c <- readRegionsLabels()
 }
 
+# fillPopulationDF <- function(populationDF){
+#   regions <- as.character(readRegionsLabels())
+#   for (year in years_f) {
+#     for (age in age_f) {
+#       for (region in regions) {
+#         for (urban in 0:1) {
+#           for (sex in 0:1) {
+#             populationDF[nrow(populationDF)+1,] <- c(year, age, region, urban, sex, 1, 1, 1)
+#           }
+#         }
+#       }
+#     }
+#   }
+#   return(populationDF)
+# }
 
-dfLength <- rep(1, length(years_f)*length(age_f)*length(urbanF_f)*length(maleF_f)*length(readRegionsLabels()))
-populationDF <- data.frame(year = years_f, 
-                           age = age_f,
-                           region = readRegionsLabels(),
-                           urban = c("urban", "rural"),
-                           sex = c("male", "female"),
-                           population = dfLength,
-                           deathCoef = dfLength,
-                           birthCoef = dfLength
+regions <- as.character(readRegionsLabels())
+populationDF <- data.frame(year = rep(years_f, each = length(age_f)*length(regions)*2*2),
+                           age = rep(age_f, each = length(regions)*2*2),
+                           region = rep(regions, each = 2*2),
+                           urban = rep(0:1, each = 2),
+                           sex = rep(0:1, each = 1),
+                           population = 1,
+                           deathCoef = 1,
+                           birthCoef = 1,
+                           stringsAsFactors=F
 )
 
+save(populationDF, file="demographyBlankData.Rda")
+load("demographyBlankData.Rda")
 
 #Read Data from its source
 #Read population data - all available sources
@@ -48,7 +59,7 @@ readBirthCoef <- function(populationDF){
   headerBirthC <- 6
   urbanLines <- c(296, 574)
   ruralLines <- c(580, 858)
-  header <- read.xlsx(paste(getwd(),"/RFData/Pril4_2014.xls", sep = ""), sheetIndex = 2, startRow = headerPopul, endRow = headerPopul, colIndex = seq(1,9,1), header = F)
+  header <- read.xlsx(paste(getwd(),"/RFData/Pril4_2014.xls", sep = ""), sheetIndex = 2, startRow = headerBirthC, endRow = headerBirthC, colIndex = seq(1,9,1), header = F)
   header[] <- lapply(header, as.character)
   header[10] <- "Urban"
   header[1] <- "RegionYearColumn"
@@ -63,24 +74,29 @@ readBirthCoef <- function(populationDF){
   
   #Parsing
   #Find proper row
-  #Write in proper year
-  result <- data.frame(year, region, age, urban, sex,  birthcoef)
-  for (yearCounter in c(2012,2013)) {
-    for (regionCounter in readRegionsLabels()) {
-      for (ageCounter in seq(15,49,1)) {
-        for (urbanCounter in c(1,0)) {
-          ageGroup <- switch (ageCounter,
-            '>15' = 1,
-            '20-24' = 2
-          )
-          birthCoef <- select(birthCoefDF, )
-          result <- (yearCounter,regionCounter,ageCounter,urbanCounter,0,birthCoef)
+  for (regionCounter in readRegionsLabels()) {
+    #Find proper area
+    sequencingRegionRow <- which(grepl(regionCounter, birthCoefDF$RegionYearColumn))
+    for (urbanCounter in c(0,1)) {
+      for (yearCounter in c(2012, 2013)) {
+        for (ageGCounter in 2:8) {
+          rowCurr <- sequencingRegionRow[urbanCounter+1]+yearCounter-2011
+          colCurr <- ageGCounter
+          age <- ageGCounter*5+10
+          birthCoef <- as.numeric(as.character(birthCoefDF[rowCurr,colCurr]))
+          populationDF[with(populationDF, 
+                            which(year == yearCounter &
+                                    age == age & 
+                                    region == regionCounter & 
+                                    urban == urbanCounter & 
+                                    sex == 0)),]$birthCoef <- birthCoef
         }
       }
     }
-    }
+  }
+  return(populationDF)
 }
-#Read death coef data - all AS
 
-#Read births per 1000 women - all AS
+system.time(populationDF <- readBirthCoef(populationDF))
+save(populationDF, file="demographyBlankData.Rda")
 

@@ -11,18 +11,23 @@ populationsRF_DF <- simulateRF(populationsRF_DF, 2015,2050)
 
 
 #Linear Regression test
-selectedYears <- c(2012, 2013, 2014)
-library(dplyr)
-dokDemoData <- dplyr::tbl_df(populationsRF_DF)
-
-inputDemographyData <- data.frame(years = selectedYears,
-                                  ageGroup = seq(1,22,1),
-                                  birthCoef = birthCoefs_DF[[""]],
-                                  deathCoef = deathCoef_DF[],
-                                  population = sum(subset(populationsRF_DF, 
-                                                          years == selectedYears, 
-                                                          select = c(maleUrbanPopulation, femaleUrbanPopulation, maleRuralPopulation, femaleRuralPopulation)))
+{
+# {
+# selectedYears <- c(2012, 2013, 2014)
+# library(dplyr)
+# dokDemoData <- dplyr::tbl_df(populationsRF_DF)
+# 
+# inputDemographyData <- data.frame(years = selectedYears,
+#                                   ageGroup = seq(1,22,1),
+#                                   birthCoef = birthCoefs_DF[[""]],
+#                                   deathCoef = deathCoef_DF[],
+#                                   population = sum(subset(populationsRF_DF, 
+#                                                           years == selectedYears, 
+#                                                           select = c(maleUrbanPopulation, femaleUrbanPopulation, maleRuralPopulation, femaleRuralPopulation)))
+# }
+}
 #EndOfLinearRegression test
+
 dataDemographyRF_transformed <- ddply(populationsRF_DF, c("years", "ageGroup"), summarise,
                                       population = sum(maleUrbanPopulation, femaleUrbanPopulation, maleRuralPopulation, femaleRuralPopulation)
 )
