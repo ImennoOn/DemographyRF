@@ -1,15 +1,10 @@
 library(shiny)
-library(leaflet)
 library(RColorBrewer)
 library(scales)
-library(lattice)
 library(googleVis)
 library(ggplot2)
 library(rCharts)
-library(data.table)
 library(dplyr)
-library(XML)
-library(RCurl)
 # options(shiny.error = traceback)
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
@@ -249,11 +244,11 @@ nPyramid <- function(dataPopulDF, iyear, icolors = NULL) {
 
 shinyServer(function(input, output, session) {
   # Секция первого запуска приложения, инициализация и предподготовка
-  geocodes_file <- "./Data/RussiaGeocodesForGoogleVis.csv"
+  geocodes_file <- file.path("./Data/RussiaGeocodesForGoogleVis.csv") # "./Data/RussiaGeocodesForGoogleVis.csv"
   geocodes <- read.csv(geocodes_file)
-  geocodes$Субъект.Федерации   <- brushUpRegions(geocodes$Субъект.Федерации)
+  geocodes$Субъект.Федерации <- brushUpRegions(geocodes$Субъект.Федерации)
   
-  populationDF_file <- "./Data/demographyBlankData_v3.RDS"
+  populationDF_file <- file.path("./Data/demographyBlankData_v3.RDS") # "./Data/demographyBlankData_v3.RDS"
   populationDF <- readRDS(populationDF_file, refhook = NULL)
   
   # Выбираем данные для демонстрации

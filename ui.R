@@ -1,5 +1,5 @@
 library(shiny)
-library(leaflet)
+library(shinydashboard)
 library(rCharts)
 
 # Choices for drop-downs
@@ -64,13 +64,16 @@ shinyUI(navbarPage("Демографическая карта РФ", id="nav",
   ),
 
   tabPanel("Данные",
-           showOutput("population_RC", "Nvd3"),
-           div(id="sDiv", " "),
-           selectInput("region_SI", "Регион:", regions_list),
-           h5("Рождений на 1000 женщин"),
-           showOutput("birthCoefs_RC", "Nvd3"),
-           h5("Вероятность умереть"), 
-           showOutput("deathCoefs_RC", "Nvd3")
+           tags$head(tags$style('.col-sm-10 {padding-left: 150px; padding-right: 20px ;}')),
+           fluidRow(box(width = 10,
+                        showOutput("population_RC", "Nvd3")),
+                    box(width = 10,
+                        div(id="sDiv", " "),
+                        selectInput("region_SI", "Регион:", regions_list),
+                        h5("Рождений на 1000 женщин"),
+                        showOutput("birthCoefs_RC", "Nvd3"),
+                        h5("Вероятность умереть"), 
+                        showOutput("deathCoefs_RC", "Nvd3")))
            ),
   
   tabPanel("Выводы"),
