@@ -4,7 +4,9 @@ library(scales)
 library(googleVis)
 library(ggplot2)
 library(rCharts)
+library(xtable)
 library(dplyr)
+library(rdrop2)
 # options(shiny.error = traceback)
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
@@ -13,8 +15,7 @@ set.seed(100)
 # Помощники
 # source("rcharts_pyramids.R")
 ## returns string w/o leading or trailing whitespace
-trim <- function (x)
-  gsub("^\\s+|\\s+$", "", x)
+trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
 brushUpRegions <- function(regionLabels) {
   regionLabels <-
@@ -242,33 +243,38 @@ nPyramid <- function(dataPopulDF, iyear, icolors = NULL) {
     n1
 }
 
+# Рабочая зона
+# Секция первого запуска приложения, инициализация и предподготовка
+## TMP
+#   populationDF$population <- as.numeric(as.character(populationDF$population))
+#   populationDF <- simulateRF(populationDF, 2013, 2050)
+#   library(parallel)
+#   cl <- makeCluster(8)
+#   regionCode <- lapply(populationDF$region,
+#                           function(x) {
+#                             as.character(geocodes$Геокод[geocodes$Субъект.Федерации==as.character(x)])
+#                             })
+#   regionCode[lapply(regionCode, length)==0] <- "-"
+#   stopCluster(cl)
+#   populationDF$regionCode <- as.factor(unlist(regionCode))
+#   saveRDS(populationDF, populationDF_file)
+## ENDTMP
+
+geocodes_file <- "Data/RussiaGeocodesForGoogleVis.csv" # "./Data/RussiaGeocodesForGoogleVis.csv"
+geocodes <- read.csv(geocodes_file)
+geocodes$Субъект.Федерации <- brushUpRegions(geocodes$Субъект.Федерации)
+
+populationDF_file <- "Data/demographyBlankData_v3.csv" # "./Data/demographyBlankData_v3.RDS"
+populationDF <- read.csv(populationDF_file)
+
+# Выбираем данные для демонстрации
+myData_v <-
+  populationDF %>% select(population, regionCode, year) %>%
+  group_by(year, regionCode) %>%
+  summarize(population = sum(population, na.rm = TRUE))
+
 shinyServer(function(input, output, session) {
-  # Секция первого запуска приложения, инициализация и предподготовка
-  geocodes_file <- file.path("./Data/RussiaGeocodesForGoogleVis.csv") # "./Data/RussiaGeocodesForGoogleVis.csv"
-  geocodes <- read.csv(geocodes_file)
-  geocodes$Субъект.Федерации <- brushUpRegions(geocodes$Субъект.Федерации)
   
-  populationDF_file <- file.path("./Data/demographyBlankData_v3.RDS") # "./Data/demographyBlankData_v3.RDS"
-  populationDF <- readRDS(populationDF_file, refhook = NULL)
-  
-  # Выбираем данные для демонстрации
-  myData_v <-
-    populationDF %>% select(population, regionCode, year) %>%
-    group_by(year, regionCode) %>%
-    summarize(population = sum(population, na.rm = TRUE))
-  
-  #   populationDF$population <- as.numeric(as.character(populationDF$population))
-  #   populationDF <- simulateRF(populationDF, 2013, 2050)
-  #   library(parallel)
-  #   cl <- makeCluster(8)
-  #   regionCode <- lapply(populationDF$region,
-  #                           function(x) {
-  #                             as.character(geocodes$Геокод[geocodes$Субъект.Федерации==as.character(x)])
-  #                             })
-  #   regionCode[lapply(regionCode, length)==0] <- "-"
-  #   stopCluster(cl)
-  #   populationDF$regionCode <- as.factor(unlist(regionCode))
-  #   saveRDS(populationDF, populationDF_file)
   
   # Секция изменения модели
   mapOutputData <- reactive({
@@ -292,7 +298,8 @@ shinyServer(function(input, output, session) {
           enableRegionInteractivity = TRUE,
           width = "100%", height = "100%",
           colorAxis = "{colors:['purple', 'red', 'orange', 'green']}",
-          backgroundColor = "lightblue"
+          backgroundColor = "lightblue",
+          tooltip.trigger = "click"
         )
       )
     })
@@ -382,5 +389,13 @@ shinyServer(function(input, output, session) {
       deathCoefs_RC
       })
     })
+  
+  output$debugInfo_geo <- renderTable({
+    summary(geocodes)
+    })
+  
+  output$debugInfo_popul <- renderTable({
+    summary(populationDF)
+  })
   
 })
